@@ -33,9 +33,14 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: '*',
+    origin: [
+      'https://rafeeq-dashboard.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:3001',
+    ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
 
   // Serve uploaded files as static assets at /static

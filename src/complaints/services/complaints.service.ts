@@ -178,7 +178,9 @@ export class ComplaintsService {
       .createQueryBuilder('complaint')
       .leftJoinAndSelect('complaint.location', 'location')
       .leftJoinAndSelect('complaint.department', 'department')
-      .leftJoinAndSelect('complaint.citizen', 'citizen');
+      .leftJoinAndSelect('complaint.citizen', 'citizen')
+      .leftJoinAndSelect('complaint.images', 'images')
+      .leftJoinAndSelect('complaint.voiceNotes', 'voiceNotes');
 
     // Scope by role
     if (currentUser.role === Role.CITIZEN) {
