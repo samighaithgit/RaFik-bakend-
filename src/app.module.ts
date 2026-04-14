@@ -37,17 +37,22 @@ import { UploadsModule } from './uploads/uploads.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('database.host'),
-        port: configService.get<number>('database.port'),
-        username: configService.get<string>('database.username'),
-        password: configService.get<string>('database.password'),
-        database: configService.get<string>('database.database'),
-        autoLoadEntities: true,
-        synchronize: false,
-        logging: configService.get<string>('app.nodeEnv') === 'development',
-      }),
+      useFactory: (configService: ConfigService) => {
+        const isProduction = configService.get<string>('app.nodeEnv') === 'production';
+        return {
+          type: 'postgres',
+          host: configService.get<string>('database.host'),
+          port: configService.get<number>('database.port'),
+          username: configService.get<string>('database.username'),
+          password: configService.get<string>('database.password'),
+          database: configService.get<string>('database.database'),
+          autoLoadEntities: true,
+          synchronize: false,
+          migrationsRun: true,
+          migrations: [isProduction ? 'dist/database/migrations/*.js' : 'src/database/migrations/*.ts'],
+          logging: !isProduction,
+        };
+      },
     }),
 
     // Event system for decoupled communication

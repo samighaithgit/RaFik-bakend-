@@ -3,6 +3,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 /**
  * TypeORM CLI data source for migrations.
  * Used by: npx typeorm-ts-node-commonjs migration:generate/run/revert
@@ -14,8 +16,8 @@ export default new DataSource({
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   database: process.env.DB_DATABASE || 'rafeeq_alkhalil',
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/database/migrations/*.ts'],
+  entities: [isProduction ? 'dist/**/*.entity.js' : 'src/**/*.entity.ts'],
+  migrations: [isProduction ? 'dist/database/migrations/*.js' : 'src/database/migrations/*.ts'],
   synchronize: false,
-  logging: process.env.NODE_ENV === 'development',
+  logging: !isProduction,
 });
