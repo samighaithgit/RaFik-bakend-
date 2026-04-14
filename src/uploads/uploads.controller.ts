@@ -16,7 +16,7 @@ import {
 } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import * as path from 'path';
-import { v4 as uuid } from 'uuid';
+import * as crypto from 'crypto';
 import { UploadsService } from './uploads.service';
 
 const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
@@ -39,7 +39,7 @@ function imageStorage() {
     },
     filename: (req, file, cb) => {
       const ext = path.extname(file.originalname) || '.jpg';
-      cb(null, `img-${uuid()}${ext}`);
+      cb(null, `img-${crypto.randomUUID()}${ext}`);
     },
   });
 }
@@ -63,7 +63,7 @@ function audioStorage() {
         'audio/3gpp': '.3gp',
       };
       const ext = mimeExt[file.mimetype] || path.extname(file.originalname) || '.m4a';
-      cb(null, `audio-${uuid()}${ext}`);
+      cb(null, `audio-${crypto.randomUUID()}${ext}`);
     },
   });
 }
