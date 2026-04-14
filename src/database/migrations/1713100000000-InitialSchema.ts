@@ -332,6 +332,27 @@ export class InitialSchema1713100000000 implements MigrationInterface {
     await queryRunner.query(`CREATE INDEX "IDX_notifications_read" ON "notifications" ("is_read")`);
     await queryRunner.query(`CREATE INDEX "IDX_notifications_user_read" ON "notifications" ("user_id", "is_read")`);
     await queryRunner.query(`CREATE INDEX "IDX_notifications_created" ON "notifications" ("created_at")`);
+
+    // ── complaint_voice_notes ──
+    await queryRunner.query(`
+      CREATE TABLE "complaint_voice_notes" (
+        "id" uuid DEFAULT gen_random_uuid() NOT NULL,
+        "complaint_id" uuid NOT NULL,
+        "voice_url" varchar(1024) NOT NULL,
+        "voice_mime_type" varchar(50),
+        "file_size" integer,
+        "duration_seconds" real,
+        "transcription" text,
+        "transcription_language" varchar(10),
+        "is_transcribed" boolean NOT NULL DEFAULT false,
+        "sort_order" smallint NOT NULL DEFAULT 0,
+        "uploaded_at" timestamptz NOT NULL DEFAULT now(),
+        CONSTRAINT "PK_complaint_voice_notes" PRIMARY KEY ("id"),
+        CONSTRAINT "FK_voice_notes_complaint" FOREIGN KEY ("complaint_id")
+          REFERENCES "complaints"("id") ON DELETE CASCADE
+      )
+    `);
+    await queryRunner.query(`CREATE INDEX "IDX_voice_notes_complaint" ON "complaint_voice_notes" ("complaint_id")`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -340,6 +361,7 @@ export class InitialSchema1713100000000 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS "complaint_assignments" CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS "complaint_status_history" CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS "complaint_comments" CASCADE`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "complaint_voice_notes" CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS "complaint_locations" CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS "complaint_images" CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS "complaints" CASCADE`);

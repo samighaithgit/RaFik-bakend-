@@ -2,17 +2,38 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
+import * as path from 'path';
 import { AppModule } from './app.module';
+import { UploadsService } from './uploads/uploads.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
   // Security
-  app.use(helmet());
-  app.enableCors();
+  app.use(
+    helmet({
+      // Allow loading images served from this same origin in the app
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    }),
+  );
+
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
+  // Serve uploaded files as static assets at /static
+  const uploadsDir = path.join(process.cwd(), 'uploads');
+  app.useStaticAssets(uploadsDir, { prefix: '/static' });
+
+  // Ensure upload directories exist
+  const uploadsService = app.get(UploadsService);
+  uploadsService.ensureDirectories();
 
   // Global prefix
   const apiPrefix = configService.get<string>('app.apiPrefix', 'api/v1');
@@ -37,6 +58,7 @@ async function bootstrap() {
     .addTag('AI Analysis', 'AI image analysis results')
     .addTag('Notifications', 'User notifications')
     .addTag('Reports', 'Analytics and reporting')
+    .addTag('Uploads', 'File upload endpoints')
     .addTag('Health', 'Health checks')
     .build();
 
@@ -50,5 +72,6 @@ async function bootstrap() {
   await app.listen(port);
   logger.log(`Rafeeq Al-Khalil API running on port ${port}`);
   logger.log(`Swagger docs available at http://localhost:${port}/docs`);
+  logger.log(`Static files available at http://localhost:${port}/static`);
 }
 bootstrap();

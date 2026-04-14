@@ -22,6 +22,7 @@ import { AssignmentsModule } from './assignments/assignments.module';
 import { AiAnalysisModule } from './ai-analysis/ai-analysis.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ReportsModule } from './reports/reports.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { ReportsModule } from './reports/reports.module';
     AiAnalysisModule,
     NotificationsModule,
     ReportsModule,
+    UploadsModule,
   ],
   providers: [
     // Global exception filter
