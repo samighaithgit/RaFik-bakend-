@@ -1,9 +1,9 @@
-import * as crypto from 'crypto';
+import { webcrypto } from 'node:crypto';
 
 // Polyfill for crypto if it's not global (required for @nestjs/typeorm in Node.js < 19)
 if (!global.crypto) {
   Object.defineProperty(global, 'crypto', {
-    value: crypto,
+    value: webcrypto,
     writable: true,
     configurable: true,
   });
@@ -39,8 +39,9 @@ async function bootstrap() {
       'http://localhost:3001',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true,
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
   });
 
   // Serve uploaded files as static assets at /static
