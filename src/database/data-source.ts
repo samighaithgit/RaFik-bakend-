@@ -4,6 +4,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const isProduction = process.env.NODE_ENV === 'production';
+const isRunFromDist = __dirname.includes('dist');
+const useCompiled = isProduction || isRunFromDist;
 
 /**
  * TypeORM CLI data source for migrations.
@@ -16,8 +18,8 @@ export default new DataSource({
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   database: process.env.DB_DATABASE || 'rafeeq_alkhalil',
-  entities: [isProduction ? 'dist/**/*.entity.js' : 'src/**/*.entity.ts'],
-  migrations: [isProduction ? 'dist/database/migrations/*.js' : 'src/database/migrations/*.ts'],
+  entities: [useCompiled ? 'dist/**/*.entity.js' : 'src/**/*.entity.ts'],
+  migrations: [useCompiled ? 'dist/database/migrations/*.js' : 'src/database/migrations/*.ts'],
   synchronize: false,
   logging: !isProduction,
 });

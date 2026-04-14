@@ -39,6 +39,8 @@ import { UploadsModule } from './uploads/uploads.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const isProduction = configService.get<string>('app.nodeEnv') === 'production';
+        const isRunFromDist = __dirname.includes('dist');
+
         return {
           type: 'postgres',
           host: configService.get<string>('database.host'),
@@ -49,7 +51,7 @@ import { UploadsModule } from './uploads/uploads.module';
           autoLoadEntities: true,
           synchronize: false,
           migrationsRun: true,
-          migrations: [isProduction ? 'dist/database/migrations/*.js' : 'src/database/migrations/*.ts'],
+          migrations: [isRunFromDist ? 'dist/database/migrations/*.js' : 'src/database/migrations/*.ts'],
           logging: !isProduction,
         };
       },
