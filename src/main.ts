@@ -1,3 +1,14 @@
+import * as crypto from 'crypto';
+
+// Polyfill for crypto if it's not global (required for @nestjs/typeorm in Node.js < 19)
+if (!global.crypto) {
+  Object.defineProperty(global, 'crypto', {
+    value: crypto,
+    writable: true,
+    configurable: true,
+  });
+}
+
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
