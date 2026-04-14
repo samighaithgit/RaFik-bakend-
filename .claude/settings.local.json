@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx skills:*)",
+      "Bash(npx @nestjs/cli new . --package-manager npm --language ts --strict)",
+      "Bash(npm install:*)",
+      "Bash(npx nest:*)",
+      "Bash(npx jest:*)",
+      "Bash(xargs grep:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}
